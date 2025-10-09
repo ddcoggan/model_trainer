@@ -1,0 +1,36 @@
+{
+    "amp": true,
+    "architecture": "resnet101",
+    "architecture_args": {},
+    "batch_size": 32,
+    "checkpoint": 0,
+    "criterion": "CrossEntropyLoss",
+    "cutmix": null,
+    "dataset": "ILSVRC2012",
+    "finetune": false,
+    "finetune_args": {},
+    "image_size": 224,
+    "model_dir": "/home/tonglab/david/models/resnet101/noise-gaussian_xform-weak-resize",
+    "num_epochs": 90,
+    "num_views": 1,
+    "optimizer": "SGD",
+    "optimizer_args": {
+        "lr": 0.1,
+        "momentum": 0.9,
+        "weight_decay": 0.0001
+    },
+    "primary_metric": "acc1",
+    "save_interval": null,
+    "scheduler": "StepLR",
+    "scheduler_args": {
+        "gamma": 0.1,
+        "step_size": 30
+    },
+    "swa": null,
+    "transform_type": "contrastive-no-blur-weak-resize",
+    "Noise": {
+        "noise_types": "gaussian",
+        "probs": 0.8,
+    	"ssnrs": [0.2, 0.4, 0.6, 0.8]
+    }
+}

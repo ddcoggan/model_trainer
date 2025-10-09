@@ -1,0 +1,45 @@
+{
+    "architecture": "cornet_s_plus",
+    "architecture_args": {},
+    "model_dir": "/home/tonglab/david/models/cornet_s_plus/occ-art_task-cont-dep-weak-resize",
+    "finetune": false,
+    "finetune_args": {},
+    "dataset": "ILSVRC2012",
+    "num_views": 2,
+    "transform_type": "contrastive-weak-resize",
+    "cutmix": null,
+    "num_epochs": 43,
+    "batch_size": 256,
+    "optimizer": "SGD",
+    "optimizer_args": {
+        "lr": 0.1,
+        "weight_decay": 1e-4,
+        "momentum": 0.9},
+    "scheduler": "StepLR",
+    "scheduler_args": {
+        "gamma": 0.1,
+        "step_size": 20},
+    "criterion": "SimCLRLoss",
+    "primary_metric": "SimCLRLoss",
+    "save_interval": null,
+    "checkpoint": null,
+    "swa": null,
+    "amp": false,
+    "batch_dependence": true,
+    "Occlusion": {
+        "color": "random",
+        "form": ["barAll04", "crossBarAll", "mudSplash", "polkadot", "polkasquare"],
+        "occluder_dir": "/home/tonglab/Datasets/occluders",
+        "probability": 0.8,
+        "views": [
+            0,
+            1
+        ],
+        "visibility": [
+            0.6,
+            0.7,
+            0.8,
+            0.9
+        ]
+    }
+}
