@@ -26,7 +26,7 @@ torch.autograd.set_detect_anomaly(False)
 #    torch.zeros(32, 32, 32, 32, device=torch.device('cuda')))
 
 # machines
-machines = ['finn','rey','padme','leia','solo','luke','yoda']
+machines = ['finn','rey','padme','leia','solo','luke','yoda', 'chewie', 'mondo']
 machine = socket.gethostname()
 
 # model queue
