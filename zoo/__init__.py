@@ -62,18 +62,19 @@ from .alexnet_V1 import AlexNet as alexnet_V1
 #from . import video
 #from . import quantization
 
-sys.path.append(op.expanduser('~/data/repos/PredNet_pytorch'))
-from prednet import PredNet as prednet
+if op.isdir(op.expanduser('~/data/repos')):
+    sys.path.append(op.expanduser('~/data/repos/PredNet_pytorch'))
+    from prednet import PredNet as prednet
 
-sys.path.append(op.expanduser('~/data/repos/pix2pix/gan'))
-from generator import UnetGenerator as pix2pix
+    sys.path.append(op.expanduser('~/data/repos/pix2pix/gan'))
+    from generator import UnetGenerator as pix2pix
 
-sys.path.append(op.expanduser('~/data/repos/BLT_recurrent_models'))
-from models.build_model import build_model as blt
+    sys.path.append(op.expanduser('~/data/repos/BLT_recurrent_models'))
+    from models.build_model import build_model as blt
 
-sys.path.append(op.expanduser('~/data/repos/pytorch_hmax'))
-from hmax import HMAX
-hmax = lambda: HMAX.HMAX(sys.path.append(op.expanduser('~/data/repos/pytorch_hmax'
-                      '/universal_patch_set.mat')))
+    sys.path.append(op.expanduser('~/data/repos/pytorch_hmax'))
+    from hmax import HMAX
+    hmax = lambda: HMAX.HMAX(sys.path.append(op.expanduser('~/data/repos/pytorch_hmax'
+                          '/universal_patch_set.mat')))
 
 

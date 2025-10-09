@@ -112,7 +112,7 @@ def complete_args(args, update=False):
         import torch
         utils_dir = f'{args.model_dir}/utils'
         if not op.isdir(utils_dir):  # if starting from scratch, remove
-            utils_dir = op.expanduser('~/david/master_scripts/DNN/utils')
+            utils_dir = 'utils'
         sys.path.append(utils_dir)
         from get_model import get_model
         from change_output_size import change_output_size

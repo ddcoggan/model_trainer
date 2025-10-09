@@ -26,22 +26,19 @@ torch.autograd.set_detect_anomaly(False)
 #    torch.zeros(32, 32, 32, 32, device=torch.device('cuda')))
 
 # machines
-machines = ['finn','rey','padme','leia','solo','luke','yoda', 'chewie', 'mondo']
+machines = ['finn','rey','padme','leia','solo','luke','yoda', 'chewie', 'Mando']
 machine = socket.gethostname()
-
-# model queue
-queue_dir = op.expanduser('~/david/master_scripts/DNN/training_queue')
-sys.path.append(queue_dir)
-os.chdir(queue_dir)
 
 
 def find_configs(machine, gpus):
-    configs = sorted(glob.glob(f'{machine}-{gpus}_*.json'))
+    configs = sorted(glob.glob(f'training_queue/{machine}-{gpus}_*.json'))
     if not configs:
-        configs = sorted(glob.glob(f'*.json'))
+        configs = sorted(glob.glob(f'training_queue/*.json'))
         for config, machine in itertools.product(configs, machines):
             if machine in config:
                 configs.remove(config)
+    if not configs:
+        print('no (more) configs found')
     return configs
 
 
@@ -51,20 +48,20 @@ while configs:
 
     # find next model and claim it by renaming file
     config = configs[0]
-    if not config.startswith(machine):
-        claimed_config = f'{machine}-{gpus}_{op.basename(config)}'
-        shutil.move(config, claimed_config)
+    if not op.basename(config).startswith(machine):
+        claimed_config = f'training_queue/{machine}-{gpus}_{op.basename(config)}'
+        shutil.move(config, f'training_queue/{claimed_config}')
         orig_config = config
         config = claimed_config
     else:
-        orig_config = '_'.join(config.split('_')[2:])
+        orig_config = '_'.join(op.basename(config).split('_')[2:])
 
     # load config, create model directory
     with open(config, 'r') as f:
         args = Namespace(**json.load(f))
     if args.model_dir is None:
         args.model_dir = op.expanduser(
-            f'~/david/models/{args.architecture}')
+            f'models/{args.architecture}')
     if args.finetune and not args.model_dir.endswith(
             args.finetune_args['finetune_dir']):
         args.model_dir += f'/{args.finetune_args["finetune_dir"]}'
@@ -86,7 +83,7 @@ while configs:
 
     utils_dir = f'{args.model_dir}/utils'
     if not op.isdir(utils_dir):  # if starting from scratch, remove
-        utils_dir = op.expanduser('~/david/master_scripts/DNN/utils')
+        utils_dir = 'utils'
     sys.path.append(utils_dir)
 
     # calculate / set missing values in config
@@ -98,7 +95,8 @@ while configs:
     optimize_model(args, verbose=True)
 
     # clean up after training
-    shutil.move(config, f'done/{orig_config}')
+    if op.isfile(f'{args.model_dir}/done'):
+        shutil.move(config, f'training_queue/done/{orig_config}')
 
     # refresh model configs
     configs = find_configs(machine, gpus)

@@ -6,7 +6,6 @@ from types import SimpleNamespace
 import torch.nn as nn
 import math
 from pathlib import Path
-sys.path.append(op.expanduser('~/david/master_scripts/DNN'))
 import zoo
 from torchvision import models
 

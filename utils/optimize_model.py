@@ -150,7 +150,7 @@ def optimize_model(args, verbose=False):
                 # after successful batch has been run, 
                 # copy over all utilities for reproducibility and save sample inputs
                 if epoch == 0 and batch == 1 and train_eval == 'train':
-                    shutil.copytree(op.expanduser('~/david/master_scripts/DNN/utils'), f'{args.model_dir}/utils')
+                    shutil.copytree('utils', f'{args.model_dir}/utils')
                     save_image_batch(inputs, num_views=args.num_views,
                         out_dir=f'{args.model_dir}/sample_{train_eval}_inputs')
                     
