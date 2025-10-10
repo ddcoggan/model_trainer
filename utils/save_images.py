@@ -25,7 +25,7 @@ def save_image_batch(inputs, out_dir, labels=None, num_views=1, max_images=64):
         if len(inputs_norm.shape) == 4:
             inputs_norm = inputs_norm.chunk(num_views)
         else:
-            inputs_norm = [i.squeeze() for i in inputs_norm]
+            inputs_norm = [inputs_norm[:, i].squeeze() for i in range(num_views)]
     else:
         inputs_norm = [inputs_norm]
 
@@ -36,7 +36,7 @@ def save_image_batch(inputs, out_dir, labels=None, num_views=1, max_images=64):
         label_string = f'_{labels[int((v*batch_size)+i)]}' if labels else ''
         view_string = f'_view-{v}' if num_views > 1 else ''
         out_path = op.join(out_dir, f'{i:04}{view_string}{label_string}.png')
-        save_image(inputs_norm[v][i, :, :, :], out_path)
+        save_image(inputs_norm[v][i, :, :, :].squeeze(), out_path)
         out_paths.append(out_path)
     
     # tile inputs into a single image

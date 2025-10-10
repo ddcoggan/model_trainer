@@ -32,7 +32,7 @@ def select_outputs_targets(outputs, targets, args):
     elif 'SimCLR' in args.criterion and len(outputs.shape) == 2:
         outputs = torch.stack(torch.split(
             outputs, outputs.shape[0] // args.num_views,
-            dim=0), dim=1)[:, views]    
+            dim=0), dim=1)[:, views]
     
     # for supervised recurrent models, ensure cycle and batch dims are combined
     elif 'SimCLR' not in args.criterion and len(outputs.shape) == 3:

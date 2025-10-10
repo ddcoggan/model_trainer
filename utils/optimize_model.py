@@ -150,10 +150,14 @@ def optimize_model(args, verbose=False):
                 # after successful batch has been run, 
                 # copy over all utilities for reproducibility and save sample inputs
                 if epoch == 0 and batch == 1 and train_eval == 'train':
-                    shutil.copytree('utils', f'{args.model_dir}/utils')
                     save_image_batch(inputs, num_views=args.num_views,
                         out_dir=f'{args.model_dir}/sample_{train_eval}_inputs')
-                    
+                    shutil.copytree('utils', f'{args.model_dir}/utils')
+
+                # flatten inputs for SimCLR
+                if args.criterion == 'SimCLRLoss':
+                    inputs = inputs.flatten(start_dim=0, end_dim=1)
+
                 # put inputs on device
                 non_blocking = 'SimCLRLoss' in metrics
                 inputs = inputs.to(device, non_blocking=non_blocking)
@@ -232,7 +236,7 @@ def optimize_model(args, verbose=False):
             swa_model.update_parameters(model)
             swa_scheduler.step()
             if epoch == args.num_epochs:
-                update_bn(train_loader, swa_model)
+                update_bn(loader_train, swa_model)
         elif args.scheduler == 'ReduceLROnPlateau':
             scheduler.step(performance[args.primary_metric].values[-1])
         else:

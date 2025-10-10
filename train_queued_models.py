@@ -50,7 +50,7 @@ while configs:
     config = configs[0]
     if not op.basename(config).startswith(machine):
         claimed_config = f'training_queue/{machine}-{gpus}_{op.basename(config)}'
-        shutil.move(config, f'training_queue/{claimed_config}')
+        shutil.move(config, claimed_config)
         orig_config = config
         config = claimed_config
     else:

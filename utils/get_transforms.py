@@ -20,15 +20,14 @@ CustomCompose.__call__ = custom_compose_call
 
 class MultipleViews:
 
-    def __init__(self, transforms, seed=False, video=False):
+    def __init__(self, transforms, seed=False):
         self.transforms = transforms
         self.num_views = len(self.transforms)
         self.seed = seed
-        self.combine = torch.stack if video else torch.cat
 
     def __call__(self, inputs):
         seed = torch.Generator().get_state() if self.seed else None
-        outputs = self.combine([t(inputs, seed) for t in self.transforms])
+        outputs = torch.stack([t(inputs, seed) for t in self.transforms])
         return outputs
 
 
@@ -78,7 +77,8 @@ def get_transforms(args):
         ]
 
         # add occlusion immediately before random horizontal flip
-        if hasattr(args, 'Occlusion'):
+        if hasattr(args, 'Occlusion') and (
+                view in args.Occlusion['views'] or args.num_views == 1):
             idx = [i for i, t in enumerate(transform_train) if isinstance(
                 t, transforms.RandomHorizontalFlip)][0]
             transform_train.insert(idx, Occlude(args))
@@ -135,8 +135,8 @@ def get_transforms(args):
         transforms_val = transforms_val[0]
     else:
         transforms_train = MultipleViews(
-            transforms_train, seed=args.batch_dependence, video=args.video)
+            transforms_train, seed=args.batch_dependence)
         transforms_val = MultipleViews(
-            transforms_val, seed=args.batch_dependence, video=args.video)
+            transforms_val, seed=args.batch_dependence)
 
     return transforms_train, transforms_val
