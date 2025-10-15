@@ -30,10 +30,8 @@ def select_outputs_targets(outputs, targets, args):
         
     # for SimCLR, ensure view dimension is separated from batch dimension
     elif 'SimCLR' in args.criterion and len(outputs.shape) == 2:
-        outputs = torch.stack(torch.split(
-            outputs, outputs.shape[0] // args.num_views,
-            dim=0), dim=1)[:, views]
-    
+        outputs = torch.unflatten(outputs, 0, sizes=(outputs.shape[0] // args.num_views, args.num_views))
+
     # for supervised recurrent models, ensure cycle and batch dims are combined
     elif 'SimCLR' not in args.criterion and len(outputs.shape) == 3:
         targets = torch.stack([targets] * outputs.shape[1]) \
