@@ -52,42 +52,50 @@ class Occlude(torch.nn.Module):
 
         # transform for occluder only
         init_occluder_size = {224: 256, 384: 432}[args.image_size]
+        if hasattr(O, 'random_resize'):
+            occluder_resize = transforms.RandomResizedCrop(
+                init_occluder_size, scale=(0.8, 1.0), antialias=True)
+        else:
+            occluder_resize = transforms.Resize(init_occluder_size, Image.NEAREST)
         self.occluder_transform = transforms.Compose([
-            transforms.Resize(init_occluder_size, Image.NEAREST),
+            occluder_resize,
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
             transforms.RandomCrop(args.image_size)])
-
 
         # ensure occluders and visibilities are lists
         occ_forms = [O.form] if isinstance(O.form, str) else O.form
         visibilities = O.visibility if \
             type(O.visibility) in [list, tuple, np.array] else [O.visibility]
-
+            
+        # visibility and probability pairings
+        if hasattr(O, 'vis_probs'):
+            vis_probs = np.array(O.vis_probs)
+            vis_probs /= vis_probs.sum()
+            self.vis_probs_cumsum = list(np.cumsum(vis_probs))
+            
         # specify occluders at instantiation for better training speed
-        occ_dirs = []
-        for form, visibility in itertools.product(occ_forms, visibilities):
-            if form != 'unoccluded' and 1 > visibility:
-                form_dir = f'{occluder_dir}/{form}'
-                # for occluders with unspecified visibility
-                if visibility == 'all':
-                    occ_dirs += glob.glob(f'{form_dir}/?0')
-                else:
-                    occ_dirs += glob.glob(f'{form_dir}/{int(visibility*100)}')
+        occ_dirs = {}
+        for visibility in visibilities:
+            if visibility < 1:
+                occ_dirs[visibility] = [f'{occluder_dir}/{form}/{int(visibility*100)}'
+                    for form in occ_forms]
 
         """occluders are stored as a list of tensors, one per occluder 
         directory, allowing mix of L and RGBA"""
-        self.occluders = []
+        self.occluders = {}
         xform = transforms.PILToTensor()
-        for occ_dir in occ_dirs:
-            if preload == 'images': # method 1: load separate image files
-                paths = glob.glob(f'{occ_dir}/*.png')
-                occs = torch.stack([xform(Image.open(i)) for i in paths], 0)
-            elif preload == 'tensors':  # method 2: load single tensor file
-                occs = torch.load(f'{occ_dir}/occluders.pt')
-            else:
-                Exception, 'preload option not one of ["images", "tensors"]'
-            self.occluders.append(occs)
+        for vis, occ_dirs_vis in occ_dirs.items():
+            self.occluders[vis] = []
+            for occ_dir in occ_dirs_vis:
+                if preload == 'images': # method 1: load separate image files
+                    paths = glob.glob(f'{occ_dir}/*.png')
+                    occs = torch.stack([xform(Image.open(i)) for i in paths], 0)
+                elif preload == 'tensors':  # method 2: load single tensor file
+                    occs = torch.load(f'{occ_dir}/occluders.pt')
+                else:
+                    Exception, 'preload option not one of ["images", "tensors"]'
+                self.occluders[vis].append(occs)
 
     # squeeze extra dimension from textured occluders
     # occs = [i.squeeze(0) if i.shape[1] == 4 else i for i in occs]
@@ -106,13 +114,16 @@ class Occlude(torch.nn.Module):
     
         O = self.Occlusion
 
-        if O.probability == 1 or torch.rand(1) < O.probability:
+        vis = [v for v, p in zip(O.visibility,
+                  self.vis_probs_cumsum) if torch.rand(1) < p][0]
 
-            # select occluder
+        if vis < 1:
+
+            # select occluder and probability
             occ_type = torch.randint(
-                len(self.occluders), (1,), generator=self.random_batch)
-            num_occs = self.occluders[occ_type].shape[0]
-            occluder = self.occluders[occ_type][torch.randint(
+                len(self.occluders[vis]), (1,), generator=self.random_batch)
+            num_occs = self.occluders[vis][occ_type].shape[0]
+            occluder = self.occluders[vis][occ_type][torch.randint(
                 num_occs, (1,), generator=self.random_batch)]
             if len(occluder.shape) == 4:  # remove extra dim for textured
                 occluder = occluder.squeeze(0)
