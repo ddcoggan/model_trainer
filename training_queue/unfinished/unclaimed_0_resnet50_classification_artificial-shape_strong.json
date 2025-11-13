@@ -1,0 +1,51 @@
+{
+    "amp": true,
+    "architecture": "resnet50",
+    "architecture_args": {},
+    "batch_size": 32,
+    "checkpoint": null,
+    "criterion": "CrossEntropyLoss",
+    "cutmix": null,
+    "dataset": "ILSVRC2012",
+    "finetune": false,
+    "finetune_args": {},
+    "model_dir": "/home/tonglab/david/models/resnet50/classification_artificial-shape_strong",
+    "num_epochs": 90,
+    "num_views": 1,
+    "optimizer": "SGD",
+    "optimizer_args": {
+        "lr": 0.1,
+        "momentum": 0.9,
+        "weight_decay": 0.0001
+    },
+    "primary_metric": "acc1",
+    "save_interval": null,
+    "scheduler": "StepLR",
+    "scheduler_args": {
+        "gamma": 0.1,
+        "step_size": 30
+    },
+    "swa": null,
+    "transform_type": "contrastive",
+    "Occlusion": {
+        "color": "random",
+        "form": [
+            "noise_coarse",
+            "noise_fine",
+            "noise_fine-ori",
+            "noise_pink"
+        ],
+        "occluder_dir": "/home/tonglab/Datasets/occluders",
+        "probability": 0.8,
+        "views": [
+            0
+        ],
+        "visibility": [
+            0.1,
+            0.3,
+            0.5,
+            0.7,
+            0.9
+        ]
+    }
+}

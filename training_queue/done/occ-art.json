@@ -1,0 +1,50 @@
+{
+    "Occlusion": {
+        "color": "random",
+        "form": ["barAll04", "crossBarAll", "mudSplash", "polkadot", "polkasquare"],
+        "occluder_dir": "/home/tonglab/Datasets/occluders",
+        "probability": 0.8,
+        "views": [
+            0
+        ],
+        "visibility": [
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9
+        ]
+    },
+    "amp": true,
+    "architecture": "vit_b_16",
+    "architecture_args": {},
+    "batch_size": 512,
+    "checkpoint": null,
+    "criterion": "CrossEntropyLoss",
+    "cutmix": null,
+    "dataset": "ILSVRC2012",
+    "finetune": false,
+    "finetune_args": {},
+    "model_dir": "/home/tonglab/david/models/vit_b_16/occ-art_xform-cont-weak-resize",
+    "num_epochs": 300,
+    "num_views": 1,
+    "optimizer": "AdamW",
+    "optimizer_args": {
+        "lr": 0.003,
+        "weight_decay": 0.3
+    },
+    "primary_metric": "acc1",
+    "save_interval": 10,
+    "scheduler": "CosineAnnealingLR",
+    "scheduler_args": {
+        "T_max": 270,
+        "eta_min": 0
+    },
+    "warmup_scheduler": "LinearLR",
+    "warmup_scheduler_args": {
+        "start_factor": 0.033,
+        "total_iters": 30
+    },
+    "swa": null,
+    "transform_type": "contrastive-weak-resize"
+}

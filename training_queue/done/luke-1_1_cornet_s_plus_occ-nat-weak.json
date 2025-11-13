@@ -1,0 +1,41 @@
+{
+    "architecture": "cornet_s_plus",
+    "architecture_args": {},
+    "model_dir": "/home/tonglab/david/models/cornet_s_plus/occ-nat-weaker_xform-cont",
+    "Occlusion": {
+        "color": "random",
+        "form": "naturalTextured",
+        "occluder_dir": "/home/tonglab/Datasets/occluders",
+        "probability": 0.8,
+        "views": [
+            0
+        ],
+        "visibility": [
+            0.8,
+            0.9
+        ]
+    },
+    "finetune": false,
+    "finetune_args": {},
+    "dataset": "ILSVRC2012",
+    "num_views": 1,
+    "transform_type": "contrastive-weak-resize",
+    "cutmix": null,
+    "num_epochs": 43,
+    "batch_size": 256,
+    "optimizer": "SGD",
+    "optimizer_args": {
+        "lr": 0.1,
+        "weight_decay": 1e-4,
+        "momentum": 0.9},
+    "scheduler": "StepLR",
+    "scheduler_args": {
+        "gamma": 0.1,
+        "step_size": 20},
+    "criterion": "CrossEntropyLoss",
+    "primary_metric": "acc1",
+    "save_interval": null,
+    "checkpoint": null,
+    "swa": null,
+    "amp": true
+}

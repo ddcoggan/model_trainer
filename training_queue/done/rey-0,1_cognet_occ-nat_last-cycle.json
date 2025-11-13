@@ -1,0 +1,50 @@
+{
+    "Occlusion": {
+        "color": "random",
+        "form": "naturalTextured",
+        "occluder_dir": "/home/tonglab/Datasets/occluders",
+        "probability": 0.8,
+        "views": [
+            0
+        ],
+        "visibility": [
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9
+        ]
+    },
+    "amp": true,
+    "architecture": "cognet_v26",
+    "architecture_args": {
+        "return_cycles": "last"
+    },
+    "batch_size": 256,
+    "checkpoint": 0,
+    "criterion": "CrossEntropyLoss",
+    "cutmix": null,
+    "dataset": "ILSVRC2012",
+    "finetune": false,
+    "finetune_args": {},
+    "image_size": 224,
+    "loss_cycle": "uniform",
+    "model_dir": "/home/tonglab/david/models/cognet/v26_occ-nat_last-cycle",
+    "num_epochs": 100,
+    "num_views": 1,
+    "optimizer": "AdamW",
+    "optimizer_args": {
+        "lr": 0.001,
+        "weight_decay": 0.01
+    },
+    "primary_metric": "acc1",
+    "save_interval": null,
+    "scheduler": "ReduceLROnPlateau",
+    "scheduler_args": {
+        "factor": 0.1,
+        "mode": "max",
+        "patience": 8
+    },
+    "swa": null,
+    "transform_type": "contrastive-weak-resize"
+}

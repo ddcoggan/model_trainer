@@ -1,0 +1,46 @@
+{
+    "Occlusion": {
+        "color": "random",
+        "form": "naturalTexturedCropped",
+        "occluder_dir": "/home/tonglab/Datasets/occluders",
+        "probability": 0.8,
+        "views": [
+            0
+        ],
+        "visibility": [
+            0.6,
+            0.7,
+            0.8,
+            0.9
+        ]
+    },
+    "amp": false,
+    "architecture": "cornet_s_plus",
+    "architecture_args": {},
+    "batch_size": 256,
+    "checkpoint": 0,
+    "criterion": "SimCLRLoss",
+    "cutmix": null,
+    "dataset": "ILSVRC2012",
+    "finetune": false,
+    "finetune_args": {},
+    "image_size": 224,
+    "model_dir": "/home/tonglab/david/models/cornet_s_plus/occ-nat-weak_task-cont",
+    "num_epochs": 43,
+    "num_views": 2,
+    "optimizer": "SGD",
+    "optimizer_args": {
+        "lr": 0.1,
+        "momentum": 0.9,
+        "weight_decay": 0.0001
+    },
+    "primary_metric": "SimCLRLoss",
+    "save_interval": null,
+    "scheduler": "StepLR",
+    "scheduler_args": {
+        "gamma": 0.1,
+        "step_size": 20
+    },
+    "swa": null,
+    "transform_type": "contrastive-weak-resize"
+}

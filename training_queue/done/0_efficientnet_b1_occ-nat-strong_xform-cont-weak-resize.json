@@ -1,0 +1,35 @@
+{
+    "architecture": "efficientnet_b1",
+    "architecture_args": {},
+    "model_dir": "/home/tonglab/david/models/efficientnet_b1/occ-nat-strong_xform-cont-weak-resize",
+    "finetune": false,
+    "finetune_args": {},
+    "dataset": "ILSVRC2012",
+    "num_views": 1,
+    "transform_type": "contrastive-weak-resize",
+    "cutmix": null,
+    "Occlusion": {
+        "occluder_dir": "/home/tonglab/Datasets/occluders",
+        "form": "naturalTextured",
+        "probability": 0.8,
+        "visibility": [0.1, 0.2, 0.4, 0.6, 0.8],
+        "color": "random",
+        "views": [0]},
+    "num_epochs": 90,
+    "batch_size": 32,
+    "optimizer": "SGD",
+    "optimizer_args": {
+        "lr": 0.1,
+        "weight_decay": 1e-4,
+        "momentum": 0.9},
+    "scheduler": "StepLR",
+    "scheduler_args": {
+        "gamma": 0.1,
+        "step_size": 30},
+    "criterion": "CrossEntropyLoss",
+    "primary_metric": "acc1",
+    "save_interval": null,
+    "checkpoint": null,
+    "swa": null,
+    "amp": true
+}

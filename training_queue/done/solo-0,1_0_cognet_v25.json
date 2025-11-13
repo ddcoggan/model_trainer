@@ -1,0 +1,29 @@
+{
+    "architecture": "cognet_v25",
+    "architecture_args": {},
+    "model_dir": "/home/tonglab/david/models/cognet/v25",
+    "finetune": false,
+    "finetune_args": {},
+    "dataset": "ILSVRC2012",
+    "num_views": 1,
+    "transform_type": "contrastive",
+    "cutmix": null,
+    "num_epochs": 100,
+    "batch_size": 256,
+    "optimizer": "AdamW",
+    "optimizer_args": {
+        "lr": 0.001,
+        "weight_decay": 0.01},
+    "scheduler": "ReduceLROnPlateau",
+    "scheduler_args": {
+        "factor": 0.1,
+        "patience": 8,
+        "mode":"max"},
+    "criterion": "CrossEntropyLoss",
+    "primary_metric": "acc1",
+    "save_interval": null,
+    "checkpoint": null,
+    "swa": null,
+    "amp": true,
+    "loss_cycle": "uniform"
+}
