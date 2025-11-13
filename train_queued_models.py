@@ -49,12 +49,13 @@ while configs:
     # find next model and claim it by renaming file
     config = configs[0]
     if not op.basename(config).startswith(machine):
-        claimed_config = f'training_queue/{machine}-{gpus}_{op.basename(config)}'
+        claimed_config = (f'training_queue/{machine}-{gpus}_'
+                          f'_{op.basename(config)}')
         shutil.move(config, claimed_config)
         orig_config = config
         config = claimed_config
     else:
-        orig_config = '_'.join(op.basename(config).split('_')[2:])
+        orig_config = op.basename(config).split('__')[-1]
 
     # load config, create model directory
     with open(config, 'r') as f:
