@@ -1,5 +1,5 @@
 import torch.nn
-import torchvision.transforms as transforms
+import torchvision.transforms.v2 as transforms
 import sys
 import os
 import os.path as op
@@ -7,7 +7,7 @@ import shutil
 from types import SimpleNamespace
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
-from .Occlude import Occlude
+from torch.utils.data import default_collate
 from .get_transforms import get_transforms
 
 def get_loaders(num_workers, args):
@@ -29,9 +29,7 @@ def get_loaders(num_workers, args):
     else:
         path_val = op.expanduser(f'~/Datasets/{args.dataset}/val')
 
-   # if op.isdir(path_train):
     data_train = ImageFolder(path_train, transform=transform_train)
-    #if op.isdir(path_val):
     data_val = ImageFolder(path_val, transform=transform_val)
     
     if hasattr(args, 'class_subset'):
@@ -40,9 +38,20 @@ def get_loaders(num_workers, args):
                 image_data[1] in args.class_subset)]
         data_val = Subset(data_val, idxs)
 
+    if args.cutmix:
+        cutmix = transforms.CutMix(alpha=1.0, num_classes=len(data_train.classes))
+        def collate_fn(batch):
+            return cutmix(*default_collate(batch))
+    elif args.mixup:
+        mixup = transforms.MixUp(alpha=1.0, num_classes=len(data_train.classes))
+        def collate_fn(batch):
+            return mixup(*default_collate(batch))
+    else:
+        collate_fn = default_collate
+
     loader_train = DataLoader(data_train, batch_size=batch_size_adjusted,
                               shuffle=True, num_workers=num_workers,
-                              drop_last=True)
+                              drop_last=True, collate_fn=collate_fn)
     loader_val = DataLoader(data_val, batch_size=batch_size_adjusted,
                             shuffle=True, num_workers=num_workers)
 

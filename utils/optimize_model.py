@@ -46,6 +46,9 @@ def optimize_model(args, verbose=False):
     # loss functions and performance metrics
     # send criteria to device before constructing optimizer
     criterion, metrics = get_criterion(args.criterion)
+    if args.cutmix or args.mixup:
+        metrics.remove('acc1')
+        metrics.remove('acc5')
     criterion.to(device)
     performance_path = f'{args.model_dir}/performance.csv'
     if op.isfile(performance_path):
@@ -146,7 +149,7 @@ def optimize_model(args, verbose=False):
                 tepoch.set_description(
                     f'{batch_time} | {train_eval.ljust(5)} | epoch'
                     f' {epoch + 1}/{args.num_epochs}')
-                    
+
                 # after successful batch has been run, 
                 # copy over all utilities for reproducibility and save sample inputs
                 if epoch == 0 and batch == 1 and train_eval == 'train':
@@ -156,6 +159,8 @@ def optimize_model(args, verbose=False):
 
                 # flatten inputs for SimCLR
                 if args.criterion == 'SimCLRLoss':
+                    assert len(inputs.shape) == 5, ('SimCLRLoss requires '
+                        'inputs with shape [batch, num_views, C, H, W]')
                     inputs = inputs.flatten(start_dim=0, end_dim=1)
 
                 # put inputs on device
@@ -173,18 +178,11 @@ def optimize_model(args, verbose=False):
                     loss = criterion(outputs, targets)   # get loss
 
                     # classification accuracy
-                    if args.criterion == 'CrossEntropyLoss':
+                    if 'acc1' in metrics:
                         acc1, acc5 = [x.detach().cpu().item() for x in
                                       accuracy(outputs, targets, (1, 5))]
                         performance_tracker['acc1'].update(acc1)
                         performance_tracker['acc5'].update(acc5)
-
-                        # if cutmix, combine background target loss with foreground target loss
-                        #if args.cutmix and apply_cutmix and not \
-                        #        args.cutmix_args['frgrnd']:
-                        #    trg = torch.concat([trg_frgrnd] * args.num_views,
-                        #                       dim=0)
-                        #    loss += criterion(outputs, trg) * lam
 
                     # add final loss value to performance tracker
                     loss_value = loss.clone().detach().cpu().numpy()
