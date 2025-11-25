@@ -1,0 +1,35 @@
+{
+    "amp": true,
+    "architecture": "cornet_s_plus",
+    "architecture_args": {},
+    "batch_dependence": false,
+    "batch_size": 256,
+    "checkpoint": 0,
+    "criterion": "CrossEntropyLoss",
+    "cutmix": false,
+    "mixup": false,
+    "randomerase": 0,
+    "dataset": "ILSVRC2012",
+    "finetune": false,
+    "image_size": 224,
+    "model_dir": "/home/tonglab/david/models/cornet_s_plus/re-0_xform-cont-weak-resize",
+    "num_epochs": 43,
+    "num_views": 1,
+    "optimizer": "SGD",
+    "optimizer_args": {
+        "lr": 0.01,
+        "momentum": 0.9,
+        "weight_decay": 0.0001
+    },
+    "primary_metric": "acc1",
+    "save_interval": 0,
+    "scheduler": "StepLR",
+    "scheduler_args": {
+        "gamma": 0.1,
+        "step_size": 20
+    },
+    "swa": null,
+    "transform_type": "contrastive-weak-resize",
+    "video": false,
+    "view_dependence": false
+}

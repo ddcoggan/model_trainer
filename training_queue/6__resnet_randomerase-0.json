@@ -1,0 +1,32 @@
+{
+    "amp": true,
+    "architecture": "resnet101",
+    "architecture_args": {},
+    "batch_size": 32,
+    "checkpoint": null,
+    "criterion": "CrossEntropyLoss",
+    "cutmix": false,
+    "mixup": false,
+    "randomerase": 0,
+    "dataset": "ILSVRC2012",
+    "finetune": false,
+    "finetune_args": {},
+    "model_dir": "/home/tonglab/david/models/resnet101/re-0_xform-cont-weak-resize",
+    "num_epochs": 90,
+    "num_views": 1,
+    "optimizer": "SGD",
+    "optimizer_args": {
+        "lr": 0.1,
+        "momentum": 0.9,
+        "weight_decay": 0.0001
+    },
+    "primary_metric": "acc1",
+    "save_interval": null,
+    "scheduler": "StepLR",
+    "scheduler_args": {
+        "gamma": 0.1,
+        "step_size": 30
+    },
+    "swa": null,
+    "transform_type": "contrastive-weak-resize"
+}

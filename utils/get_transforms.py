@@ -106,6 +106,11 @@ def get_transforms(args):
         # normalize
         transform_train.append(normalize)
 
+        # random erase
+        if hasattr(args, 'randomerase') and args.randomerase is not False:
+            transform_train.append(
+                transforms.RandomErasing(value=args.randomerase, inplace=True))
+
         # add to transform list
         transforms_train.append(transform_train)
 
