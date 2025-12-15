@@ -67,20 +67,6 @@ while configs:
             args.finetune_args['finetune_dir']):
         args.model_dir += f'/{args.finetune_args["finetune_dir"]}'
     os.makedirs(args.model_dir, exist_ok=True)
-    """
-    # copy over all utilities for reproducibility (now done in optimize_model.py)
-    utils_dir = f'{args.model_dir}/utils'
-    if op.isdir(utils_dir): # if starting from scratch, remove existing utils
-        saved_epoch_paths = sorted(glob.glob(f'{args.model_dir}/params/???.pt'))
-        if len(saved_epoch_paths):
-            last_saved_epoch = int(op.basename(saved_epoch_paths[-1])[:3])
-            if last_saved_epoch == 0:
-                shutil.rmtree(utils_dir)
-    if not op.exists(utils_dir):
-        utils_dir_orig = op.expanduser('~/david/master_scripts/DNN/utils')
-        shutil.copytree(utils_dir_orig, utils_dir)
-    sys.path.append(utils_dir)
-    """
 
     utils_dir = f'{args.model_dir}/utils'
     if not op.isdir(utils_dir):  # if starting from scratch, remove

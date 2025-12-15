@@ -52,7 +52,7 @@ class Occlude(torch.nn.Module):
 
         # transform for occluder only
         init_occluder_size = {224: 256, 384: 432}[args.image_size]
-        if hasattr(O, 'random_resize'):
+        if hasattr(O, 'random_resize') and O.random_resize:
             occluder_resize = transforms.RandomResizedCrop(
                 init_occluder_size, scale=(0.8, 1.0), antialias=True)
         else:
@@ -73,6 +73,8 @@ class Occlude(torch.nn.Module):
             vis_probs = np.array(O.vis_probs)
             vis_probs /= vis_probs.sum()
             self.vis_probs_cumsum = list(np.cumsum(vis_probs))
+        else:
+            self.vis_probs_cumsum = torch.linspace(0, 1, len(visibilities)+1)[1:].tolist()
             
         # specify occluders at instantiation for better training speed
         occ_dirs = {}
