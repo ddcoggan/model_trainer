@@ -178,8 +178,6 @@ class Occlude(torch.nn.Module):
 
             # replace occluded pixels with occluder (dropping alpha channel)
             image += occluder[:3]
-        else:
-            print('unoccluded')
 
         return image
 

@@ -72,7 +72,7 @@ while configs:
     os.makedirs(args.model_dir, exist_ok=True)
 
     utils_dir = f'{args.model_dir}/utils'
-    if not op.isdir(utils_dir):  # if starting from scratch, remove
+    if not op.isdir(utils_dir):
         utils_dir = 'utils'
     sys.path.append(utils_dir)
 
@@ -87,6 +87,7 @@ while configs:
     # clean up after training
     if op.isfile(f'{args.model_dir}/done'):
         shutil.move(config, f'training_queue/done/{orig_config}')
+    sys.path.remove(utils_dir)
 
     # refresh model configs
     configs = find_configs(machine, gpus)
