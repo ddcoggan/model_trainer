@@ -65,20 +65,31 @@ class Occlude(torch.nn.Module):
 
         # ensure occluders and visibilities are lists
         occ_forms = [O.form] if isinstance(O.form, str) else O.form
-        visibilities = O.visibility if \
+        assert not (O.probability < 1 and max(O.visibility) == 1), (
+            'If occlusion probability is less than 1, maximum visibility must '
+            'be less than 1 to avoid ambiguity.')
+        self.visibilities = O.visibility if \
             type(O.visibility) in [list, tuple, np.array] else [O.visibility]
             
         # visibility and probability pairings
         if hasattr(O, 'vis_probs'):
+            assert len(O.vis_probs) == len(self.visibilities), (
+                'If vis_probs is specified, it must match length of visibility '
+                'list.')
             vis_probs = np.array(O.vis_probs)
-            vis_probs /= vis_probs.sum()
+            vis_probs = vis_probs / vis_probs.sum() * O.probability
             self.vis_probs_cumsum = list(np.cumsum(vis_probs))
         else:
-            self.vis_probs_cumsum = torch.linspace(0, 1, len(visibilities)+1)[1:].tolist()
+            self.vis_probs_cumsum = torch.linspace(0, O.probability,
+                                                   len(self.visibilities)+1)[
+                                    1:].tolist()
+        if max(self.visibilities) < 1 and O.probability < 1:
+            self.visibilities.append(1.0)
+            self.vis_probs_cumsum.append(1.0)
             
         # specify occluders at instantiation for better training speed
         occ_dirs = {}
-        for visibility in visibilities:
+        for visibility in self.visibilities:
             if visibility < 1:
                 occ_dirs[visibility] = [f'{occluder_dir}/{form}/{int(visibility*100)}'
                     for form in occ_forms]
@@ -98,9 +109,6 @@ class Occlude(torch.nn.Module):
                 else:
                     Exception, 'preload option not one of ["images", "tensors"]'
                 self.occluders[vis].append(occs)
-
-    # squeeze extra dimension from textured occluders
-    # occs = [i.squeeze(0) if i.shape[1] == 4 else i for i in occs]
     
     def set_seed(self, seed):
         """
@@ -116,8 +124,8 @@ class Occlude(torch.nn.Module):
     
         O = self.Occlusion
 
-        vis = [v for v, p in zip(O.visibility,
-                  self.vis_probs_cumsum) if torch.rand(1) < p][0]
+        vis = next(v for v, p in zip(self.visibilities,
+                  self.vis_probs_cumsum) if torch.rand(1) < p)
 
         if vis < 1:
 
@@ -170,6 +178,8 @@ class Occlude(torch.nn.Module):
 
             # replace occluded pixels with occluder (dropping alpha channel)
             image += occluder[:3]
+        else:
+            print('unoccluded')
 
         return image
 

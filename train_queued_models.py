@@ -29,9 +29,12 @@ torch.autograd.set_detect_anomaly(False)
 machines = ['finn','rey','padme','leia','solo','luke','yoda', 'chewie', 'Mando']
 machine = socket.gethostname()
 
+# job number
+job_id = input(f'Which job number for this GPU set? E.g., 0 :')
 
-def find_configs(machine, gpus):
-    configs = sorted(glob.glob(f'training_queue/{machine}-{gpus}_*.json'))
+def find_configs(machine, gpus, job_id):
+    configs = sorted(glob.glob(f'training_queue/{machine}_gpu-{gpus}_job'
+                               f'-{job_id}__*.json'))
     if not configs:
         configs = sorted(glob.glob(f'training_queue/*.json'))
         for config, machine in itertools.product(configs, machines):
@@ -43,14 +46,14 @@ def find_configs(machine, gpus):
 
 
 # get model list
-configs = find_configs(machine, gpus)
+configs = find_configs(machine, gpus, job_id)
 while configs:
 
     # find next model and claim it by renaming file
     config = configs[0]
     if not op.basename(config).startswith(machine):
-        claimed_config = (f'training_queue/{machine}-{gpus}_'
-                          f'_{op.basename(config)}')
+        claimed_config = (f'training_queue/{machine}_gpu-{gpus}_job'
+                          f'-{job_id}__{op.basename(config)}')
         shutil.move(config, claimed_config)
         orig_config = config
         config = claimed_config
@@ -83,7 +86,7 @@ while configs:
 
     # clean up after training
     if op.isfile(f'{args.model_dir}/done'):
-        shutil.move(config, orig_config.replace('training_queue', 'training_queue/done'))
+        shutil.move(config, f'training_queue/done/{orig_config}')
 
     # refresh model configs
     configs = find_configs(machine, gpus)
