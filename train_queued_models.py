@@ -86,10 +86,10 @@ while configs:
 
     # clean up after training
     if op.isfile(f'{args.model_dir}/done'):
-        shutil.move(config, f'training_queue/done/{orig_config}')
+        shutil.move(config, f'training_queue/done/{op.basename(orig_config)}')
     sys.path.remove(utils_dir)
 
     # refresh model configs
-    configs = find_configs(machine, gpus)
+    configs = find_configs(machine, gpus, job_id)
 
 
