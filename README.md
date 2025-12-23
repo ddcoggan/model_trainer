@@ -16,7 +16,7 @@ can be found in `utils/complete_config.py`.
 
 architecture
 : string name of model architecture to use. Must be in 
-the zoo or the torchvision library (lower-case string, e.g., "resnet101")
+the zoo or the torchvision library (lower-case string, e.g., `"resnet101"`)
 
 architecture_args
 : dictionary containing any kwargs to pass to the model at 
