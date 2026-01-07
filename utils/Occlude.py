@@ -111,6 +111,26 @@ class Occlude(torch.nn.Module):
                 else:
                     Exception, 'preload option not one of ["images", "tensors"]'
                 self.occluders[vis].append(occs)
+
+        """ create occluder textures """
+        if O.color == 'pink_noise':
+            H = W = init_occluder_size
+
+            # pink noise Fourier amplitude spectrum
+            [fx, fy] = np.meshgrid(np.linspace(-W // 2, W // 2, W),
+                                   np.linspace(-W // 2, W // 2, W))
+            amp = np.fft.ifftshift(1 / np.sqrt(fx ** 2 + fy ** 2))
+            amp -= amp.min()
+            amp /= amp.max()
+
+            self.textures = torch.zeros(1000, H, W)
+            for i in range(1000):
+                phi = np.angle(np.fft.fft2(np.random.rand(H, W)))
+                mask = np.fft.ifft2(amp * np.exp(1j * phi)).real
+                mask -= mask.min()
+                mask /= mask.max()
+                self.textures[i] = torch.tensor(mask)
+
     
     def set_seed(self, seed):
         """
@@ -145,26 +165,35 @@ class Occlude(torch.nn.Module):
                 occluder = occluder / 255
             occluder = occluder.clip(0,1)
 
-            # set occluder color unless texture is used
-            if occluder.shape[0] == 1:
+            # create occluder texture as RGB image (already done for natural)
+            if occluder.shape[0] == 1:  # ignores natural occluders
 
                 # if multiple colors requested, select one at random
                 if type(O.color) == list:
-                    fill_col = O.color[torch.randint(
+                    fill = O.color[torch.randint(
                         len(O.color),(1,), generator=self.random_batch)]
                 else:
-                    fill_col = O.color
+                    fill = O.color
 
-                # if color is specified as RGB, convert to tensor and normalise
-                if fill_col == 'random':
-                    fill_rgb = torch.rand((3,), generator=self.random_batch)
+                # pink Fourier noise in randomly selected channel
+                if fill == 'pink_noise':
+                    tex_idx = torch.randint(
+                        self.textures.shape[0], (1,), generator=self.random_batch)
+                    chn_idx = torch.randint(3, (1,), generator=self.random_batch)
+                    rgb = torch.zeros((3, occluder.shape[1], occluder.shape[2]))
+                    rgb[chn_idx] = self.textures[tex_idx].squeeze(0)
+
+                # uniform color
                 else:
-                    fill_rgb = torch.tensor(fill_col)
-                    if max(fill_rgb) > 1:
-                        fill_rgb /= 255
+                    if fill == 'random':
+                        fill_rgb = torch.rand((3,), generator=self.random_batch)
+                    else:
+                        fill_rgb = torch.tensor(fill)
+                        if max(fill_rgb) > 1:
+                            fill_rgb /= 255
+                    rgb = torch.tile(fill_rgb[:, None, None], occluder.shape)
 
-                # colorize
-                rgb = torch.tile(fill_rgb[:, None, None], occluder.shape)
+                # combine occluder texture and mask
                 occluder = torch.cat([rgb, occluder], 0)
 
             # transform
