@@ -32,7 +32,7 @@ class Noise(torch.nn.Module):
         # select ssnr
         rand = torch.rand(1)
         if hasattr(self, 'cum_prob'):
-            ssnr = self.ssnr[torch.searchsorted(self.cum_prob, rand)]
+            ssnr = self.ssnrs[torch.searchsorted(self.cum_prob, rand)]
         elif rand < self.probs:
             ssnr = self.ssnrs[torch.randint(len(self.ssnrs), (1,))]
         else:
