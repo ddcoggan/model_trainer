@@ -150,7 +150,8 @@ def optimize_model(args, verbose=False):
                     f'{batch_time} | {train_eval.ljust(5)} | epoch'
                     f' {epoch + 1}/{args.num_epochs}')
 
-                # after successful batch has been run, 
+                if batch == 589:
+                    print('sdf')
                 # copy over all utilities for reproducibility and save sample inputs
                 if epoch == 0 and batch == 1 and train_eval == 'train':
                     save_image_batch(inputs, num_views=args.num_views,

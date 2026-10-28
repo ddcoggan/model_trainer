@@ -83,11 +83,13 @@ class Occlude(torch.nn.Module):
             self.vis_probs_cumsum = torch.linspace(0, O.probability,
                                                    len(self.visibilities)+1)[
                                     1:].tolist()
+        vis_print = self.visibilities.copy()
+        vis_cs_print = self.vis_probs_cumsum.copy()
         if max(self.visibilities) < 1 and O.probability < 1:
-            self.visibilities.append(1.0)
-            self.vis_probs_cumsum.append(1.0)
-        print(f'visibility levels: {self.visibilities}')
-        print(f'visibility probabilities (cumulative): {self.vis_probs_cumsum}')
+            vis_print.append(1.0)
+            vis_cs_print.append(1.0)
+        print(f'visibility levels: {vis_print}')
+        print(f'visibility probabilities (cumulative): {vis_cs_print}')
             
         # specify occluders at instantiation for better training speed
         occ_dirs = {}
